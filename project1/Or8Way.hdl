@@ -11,7 +11,6 @@ CHIP Or8Way {
     OUT out;
 
     PARTS:
-    //// Replace this comment with your code.
     Or(a=in[0] , b=in[1] , out=temp1 );
     Or(a=in[2] , b=temp1 , out=temp2 );
     Or(a=in[3] , b=temp2 , out=temp3 );
