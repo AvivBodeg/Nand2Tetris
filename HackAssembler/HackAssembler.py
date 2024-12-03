@@ -83,19 +83,20 @@ if __name__ == '__main__':
         print('Usage: HackAssembler.py <path/to/file.asm | directory/to/files>')
         sys.exit()
 
-    file_path = sys.argv[1]
-    if os.path.isdir(file_path):
-        for file in os.listdir(file_path):
+    input_path = sys.argv[1]
+    if os.path.isdir(input_path):
+        for file in os.listdir(input_path):
             if file.endswith('.asm'):
-                print(f'Processing {file}')
-                # assemble
+                print(f'Processing {file}...')
+                assembler = Assembler(os.path.join(input_path, file))
+                assembler.assemble()
         print('Completed assembling')
     else:
-        if not file_path.endswith('.asm'):
+        if not input_path.endswith('.asm'):
             print('Invalid file type, expected .asm')
             sys.exit()
         else:
-            print(f'Processing {file_path}')
-            assembler = Assembler(os.path.join(file_path))
+            print(f'Processing {input_path}...')
+            assembler = Assembler(os.path.join(input_path))
             assembler.assemble()
             print('Completed assembling')
