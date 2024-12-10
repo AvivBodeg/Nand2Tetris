@@ -1,10 +1,10 @@
 import os
+
+
 class CodeWriter:
     def __init__(self, file_path: str):
-        print(file_path)
         self.file_path = file_path
         self.file_name = os.path.basename(self.file_path)[:-3]
-        print(self.file_name)
         self.label_counter = 0  # to prevent reuses of labels
         self.symbols = {
             # Arithmetic Operators

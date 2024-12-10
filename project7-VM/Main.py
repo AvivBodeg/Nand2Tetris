@@ -57,8 +57,10 @@ def main():
 
     if os.path.isfile(path):
         if path.endswith('.vm'):
+            print("Translating " + path)
             vm = VM(sys.argv[1])
             vm.write_file()
+            print("Done!")
         else:
             print("ERROR: wrong file type. expected file.vm")
     elif os.path.isdir(path):
@@ -72,8 +74,10 @@ def main():
 
         for file in os.listdir(path):
             if file.endswith(".vm"):
+                print("Translating " + file)
                 vm = VM(os.path.join(path, file))
                 vm.write_dir(name)
+        print("Done!")
     else:
         print("ERROR: Invalid path")
 

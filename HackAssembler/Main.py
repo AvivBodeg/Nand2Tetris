@@ -6,7 +6,7 @@ from SymbolTable import SymbolTable
 class Assembler:
     def __init__(self, input_file):
         self.input_file = input_file
-        self.output_file = input_file.replace('asm', 'hack')
+        self.output_file = input_file[:-3] + "hack"
         self.instructions = []
         self.binary_instructions = []
         self.symbol_table = SymbolTable()
@@ -80,18 +80,11 @@ class Assembler:
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print('Usage: HackAssembler.py <path/to/file.asm | directory/to/files>')
+        print('Usage: Main.py <path/to/file.asm>')
         sys.exit()
 
     input_path = sys.argv[1]
-    if os.path.isdir(input_path):
-        for file in os.listdir(input_path):
-            if file.endswith('.asm'):
-                print(f'Processing {file}...')
-                assembler = Assembler(os.path.join(input_path, file))
-                assembler.assemble()
-        print('Completed assembling')
-    else:
+    if os.path.isfile(input_path):
         if not input_path.endswith('.asm'):
             print('Invalid file type, expected .asm')
             sys.exit()
@@ -100,3 +93,12 @@ if __name__ == '__main__':
             assembler = Assembler(os.path.join(input_path))
             assembler.assemble()
             print('Completed assembling')
+    else:
+        print('Error: Expected a file path')
+    # elif os.path.isdir(input_path):
+    #     for file in os.listdir(input_path):
+    #         if file.endswith('.asm'):
+    #             print(f'Processing {file}...')
+    #             assembler = Assembler(os.path.join(input_path, file))
+    #             assembler.assemble()
+    #     print('Completed assembling')
