@@ -1,6 +1,10 @@
+import os
 class CodeWriter:
-    def __init__(self, file_name: str):
-        self.file_name = file_name[:-4]
+    def __init__(self, file_path: str):
+        print(file_path)
+        self.file_path = file_path
+        self.file_name = os.path.basename(self.file_path)[:-3]
+        print(self.file_name)
         self.label_counter = 0  # to prevent reuses of labels
         self.symbols = {
             # Arithmetic Operators
@@ -41,7 +45,7 @@ class CodeWriter:
 
     def write_basic_arithmetic(self, command: str) -> list:
         """command is either 'add', 'sub', 'and' or 'or''"""
-        output = [self.comment(command)]
+        output = []
         # pop Stack into D:
         output.append("@SP")
         output.append("AM=M-1")
@@ -56,7 +60,7 @@ class CodeWriter:
 
     def write_compare_arithmetic(self, command:str) -> list:
         """command is either 'eq', 'gt', 'lt''"""
-        output = [self.comment(command)]
+        output = []
         jump_label = "CompLabel" + str(self.label_counter)
         self.label_counter += 1
         # pop Stack into D
@@ -85,7 +89,7 @@ class CodeWriter:
 
     def write_compare_neg_not(self, command: str) -> list:
         """command is either 'neg' or 'not' """
-        output = [self.comment(command)]
+        output = []
         # access to Stack[-1]:
         output.append("@SP")
         output.append("A=M-1")
@@ -97,7 +101,7 @@ class CodeWriter:
     def write_pop_push(self, command: str, segment: str, index: int) -> list:
         """command is either 'pop' or 'push'.
         segment is a value/name"""
-        output = [self.comment(command)]
+        output = []
         if command == "C_PUSH":
             return self.write_push(command, segment, index)
         elif command == "C_POP":
@@ -107,7 +111,7 @@ class CodeWriter:
 
     def write_push(self, command: str, segment: str, index: int) -> list:
         """writes push block"""
-        output = [self.comment(command)]
+        output = []
 
         if segment == "constant":
             output.append("@" + str(index))
@@ -156,7 +160,7 @@ class CodeWriter:
 
     def write_pop(self, command: str, segment: str, index: int) -> list:
         """writes pop block"""
-        output = [self.comment(command)]
+        output = []
 
         if segment == "constant":  # invalid command.
             raise NameError("Cannot Pop Constant Segment")

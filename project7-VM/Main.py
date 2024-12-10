@@ -25,11 +25,13 @@ class VM:
                 index = self.parser.get_argument2(command)
                 block = self.codeWriter.write_pop_push(c_type, segment, index)
             instructions = "\n".join(block)
+            file.write(self.codeWriter.comment(command))
             file.write(instructions)
         file.close()
 
     def write_dir(self, file_name):
         file = open(file_name, 'a')
+        file.write(f'// Current file: {self.input_file}\n')
         for command in self.commands:
             c_type = self.parser.command_type(command)
             block = []
@@ -39,9 +41,10 @@ class VM:
                 segment = self.parser.get_argument1(command)
                 index = self.parser.get_argument2(command)
                 block = self.codeWriter.write_pop_push(c_type, segment, index)
+            file.write(self.codeWriter.comment(command))
             instructions = "\n".join(block)
             file.write(instructions)
-        file.write('\n')
+        file.write('\n')  # new line for readability
         file.close()
 
 
