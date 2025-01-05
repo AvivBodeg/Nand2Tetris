@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="fa494905-c222-4c24-982c-5e32b6828b15" name="Changes" comment="proj 6">
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/BasicTest/BasicTest.cmp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/BasicTest/BasicTest.tst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/BasicTest/BasicTest.vm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/BasicTest/BasicTestVME.tst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/PointerTest/PointerTest.cmp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/PointerTest/PointerTest.tst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/PointerTest/PointerTest.vm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/PointerTest/PointerTestVME.tst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/SimpleAdd/SimpleAdd.cmp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/SimpleAdd/SimpleAdd.tst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/SimpleAdd/SimpleAdd.vm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/SimpleAdd/SimpleAddVME.tst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/StackTest/StackTest.cmp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/StackTest/StackTest.tst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/StackTest/StackTest.vm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/StackTest/StackTestVME.tst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/StaticTest/StaticTest.cmp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/StaticTest/StaticTest.tst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/StaticTest/StaticTest.vm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7-VM/files/StaticTest/StaticTestVME.tst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7/Arithmetic_Translation.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7/POP_PUSH_Translation.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project7/project8translation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AUTHORS" beforeDir="false" afterPath="$PROJECT_DIR$/../AUTHORS" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SymbolTable.py" beforeDir="false" afterPath="$PROJECT_DIR$/SymbolTable.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2pblQ7HGpa9B4wOsfwyfOFKDhn2" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Python.Dictionaries.executor&quot;: &quot;Run&quot;,
+    &quot;Python.SymbolTable.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Testing.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/avivbodeg/University/Nand2Tetris/HackAssembler&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="HackAssembler" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-7a29c1521ef0-c986f194a52a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-233.11799.298" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="fa494905-c222-4c24-982c-5e32b6828b15" name="Changes" comment="" />
+      <created>1733042637706</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1733042637706</updated>
+      <workItem from="1733042640075" duration="788000" />
+      <workItem from="1733044613837" duration="1500000" />
+      <workItem from="1733057946073" duration="14000" />
+      <workItem from="1733223720262" duration="1477000" />
+      <workItem from="1733225291823" duration="18000" />
+      <workItem from="1733229304398" duration="618000" />
+      <workItem from="1733235438191" duration="10620000" />
+      <workItem from="1733329246098" duration="17000" />
+      <workItem from="1733329452722" duration="1709000" />
+      <workItem from="1733393961182" duration="740000" />
+      <workItem from="1733644410891" duration="983000" />
+      <workItem from="1733752341445" duration="25000" />
+      <workItem from="1733784831156" duration="6000" />
+      <workItem from="1733784872051" duration="1224000" />
+      <workItem from="1733828582380" duration="481000" />
+      <workItem from="1733831287339" duration="555000" />
+      <workItem from="1733831849669" duration="3523000" />
+      <workItem from="1733939438707" duration="1000" />
+      <workItem from="1733939441776" duration="1000" />
+    </task>
+    <task id="LOCAL-00001" summary="gitignore">
+      <option name="closed" value="true" />
+      <created>1733257404249</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1733257404249</updated>
+    </task>
+    <task id="LOCAL-00002" summary="proj 6">
+      <option name="closed" value="true" />
+      <created>1733261852516</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1733261852516</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.asm" />
+    <option featureType="com.intellij.fileTypeFactory" implementationName="Makefile" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="gitignore" />
+    <MESSAGE value="proj 6" />
+    <option name="LAST_COMMIT_MESSAGE" value="proj 6" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/HackAssembler$SymbolTable.coverage" NAME="SymbolTable Coverage Results" MODIFIED="1733258075174" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/HackAssembler$Dictionaries.coverage" NAME="Dictionaries Coverage Results" MODIFIED="1733225102516" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/HackAssembler$main.coverage" NAME="main Coverage Results" MODIFIED="1733246979006" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/HackAssembler$Testing.coverage" NAME="Testing Coverage Results" MODIFIED="1733261128350" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
