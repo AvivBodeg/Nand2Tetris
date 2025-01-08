@@ -9,7 +9,7 @@ KEYWORDS = {"class", "constructor", "function", "method", "field", "static", "va
 SYMBOLS = {'{', '}', '(', ')', '[', ']', '.', ',', ';', '+', '-', '*', '/', '&', '<', '>', '=', '~'}
 
 # REGEX:
-KEYWORD_REGEX = '(?!\\w)|'.join(KEYWORDS) + '(?!\\w)'
+KEYWORD_REGEX = r'(?!\w)|'.join(KEYWORDS) + r'(?!\w)'
 SYMBOLS_REGEX = '[' + re.escape('|'.join(SYMBOLS)) + ']'
 INTEGER_REGEX = r'\d+'
 STRINGS_REGEX = r'"[^"\n]*"'

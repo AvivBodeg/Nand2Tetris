@@ -8,7 +8,7 @@ class JackTokenizer:
         self.clean_code()
         self.currToken = ''
         self.tokens = self.tokenize()
-        self.tokens = self.replace_symbols()
+        self.tokens = self.replace_symbols() # list of tuples(token, value)
 
     def clean_code(self):
         """ Removes comments from the file"""
@@ -57,7 +57,7 @@ class JackTokenizer:
         '"' : &quot
         '&' : &amp
         """
-        return [self.replace_symbol(pair) for pair in self.tokens]
+        return [self.replace_symbol(tuple_) for tuple_ in self.tokens]
 
     def has_more_tokens(self):
         """ Checks if there are more tokens to process"""
@@ -95,9 +95,9 @@ class JackTokenizer:
         return WORD.findall(text)
 
     @staticmethod
-    def replace_symbol(pair):
+    def replace_symbol(tuple_):
         """Replaces symbols with corresponding alternative representation"""
-        token, val = pair
+        token, val = tuple_
         if val == '<':
             return token, '&lt;'
         elif val == '>':
