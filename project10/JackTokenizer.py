@@ -18,44 +18,44 @@ class JackTokenizer:
     def __init__(self, file):
         with open(file, 'r') as f:
             self.lines = f.read()
-        self.cleanCode()
+        self.clean_code()
         self.currToken = ''
         self.tokens = self.tokenize()
-        self.tokens = self.replaceSymbols()
+        self.tokens = self.replace_symbols()
 
-    def cleanCode(self):
+    def clean_code(self):
         """ Removes comments from the file"""
         index = 0
-        cleanText = ''
+        clean_text = ''
         while index < len(self.lines):  # Iterate over the entire text and clean the code
-            currentChar = self.lines[index]
+            current_char = self.lines[index]
             # In String
-            if currentChar == '\"':
-                endIndex = self.lines.find('\"', index + 1)
-                cleanText += self.lines[index: endIndex + 1]
-                index = endIndex + 1
+            if current_char == '\"':
+                end_index = self.lines.find('\"', index + 1)
+                clean_text += self.lines[index: end_index + 1]
+                index = end_index + 1
             # Comment
-            elif currentChar == '/':
+            elif current_char == '/':
                 # single line comment '//'
                 if self.lines[index + 1] == '/':
-                    endIndex = self.lines.find('\n', index + 1)
-                    index = endIndex + 1
-                    cleanText += ' '
+                    end_index = self.lines.find('\n', index + 1)
+                    index = end_index + 1
+                    clean_text += ' '
                 # multi line comment
                 elif self.lines[index + 1] == '*':
-                    endIndex = self.lines.find('*/', index + 1)
-                    index = endIndex + 2
-                    cleanText += ' '
+                    end_index = self.lines.find('*/', index + 1)
+                    index = end_index + 2
+                    clean_text += ' '
                 # / for divide
                 else:
-                    cleanText += self.lines[index]
+                    clean_text += self.lines[index]
                     index = index + 1
             else:
-                cleanText += self.lines[index]
+                clean_text += self.lines[index]
                 index = index + 1
 
         # sets lines to the cleaned version
-        self.lines = cleanText
+        self.lines = clean_text
         return
 
     @staticmethod
@@ -72,12 +72,12 @@ class JackTokenizer:
             return "identifier", word
 
     @staticmethod
-    def splitTokens(text):
+    def split_tokens(text):
         """Breaks a single string into a list of tokens"""
         return WORD.findall(text)
 
     @staticmethod
-    def replaceSymbol(pair):
+    def replace_symbol(pair):
         """Replaces symbols with corresponding alternative representation"""
         token, val = pair
         if val == '<':
@@ -93,9 +93,9 @@ class JackTokenizer:
 
     def tokenize(self):
         """ Tokenizes the text"""
-        return [self.token(word) for word in self.splitTokens(self.lines)]
+        return [self.token(word) for word in self.split_tokens(self.lines)]
 
-    def replaceSymbols(self):
+    def replace_symbols(self):
         """
         Replaces symbols to avoid xml problems using the following guide:
         '<' : &lt
@@ -103,25 +103,28 @@ class JackTokenizer:
         '"' : &quot
         '&' : &amp
         """
-        return [self.replaceSymbol(pair) for pair in self.tokens]
+        return [self.replace_symbol(pair) for pair in self.tokens]
 
-    def hasMoreTokens(self):
+    def has_more_tokens(self):
         """ Checks if there are more tokens to process"""
         return self.tokens != []
 
     def peek(self):
         """ Returns the first token in tokens"""
-        if self.hasMoreTokens():
+        if self.has_more_tokens():
             return self.tokens[0]
-        return 'ERROR', 0
+        return 'ERROR', 'END OF FILE'
 
-    def getToken(self):
+    def get_token(self):
         return self.tokens[0]
 
-    def getValue(self):
+    def get_value(self):
         return self.currToken[1]
 
     def advance(self):
         """ Should only be called if hasMoreTokens() is true"""
-        self.currToken = self.tokens.pop(0)
-        return self.currToken
+        if self.has_more_tokens():
+            self.currToken = self.tokens.pop(0)
+            return self.currToken
+        return 'ERROR', 'END OF FILE'
+    
