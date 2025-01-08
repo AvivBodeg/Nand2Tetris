@@ -1,17 +1,4 @@
-import re  # regular expression
-
-KEYWORDS = {"class", "constructor", "function", "method", "field", "static", "var", "int", "char", "boolean",
-            "void", "true", "false", "null", "this", "let", "do", "if", "else", "while", "return"}
-SYMBOLS = {'{', '}', '(', ')', '[', ']', '.', ',', ';', '+', '-', '*', '/', '&', '<', '>', '=', '~'}
-
-# REGEX:
-KEYWORD_REGEX = '(?!\\w)|'.join(KEYWORDS) + '(?!\\w)'
-SYMBOLS_REGEX = '[' + re.escape('|'.join(SYMBOLS)) + ']'
-INTEGER_REGEX = r'\d+'
-STRINGS_REGEX = r'"[^"\n]*"'
-IDENTIFIERS_REGEX = r'[\w]+'
-WORD = re.compile(
-    f'{KEYWORD_REGEX}|{SYMBOLS_REGEX}|{INTEGER_REGEX}|{STRINGS_REGEX}|{IDENTIFIERS_REGEX}')
+from CONSTANTS import *
 
 
 class JackTokenizer:
@@ -58,42 +45,9 @@ class JackTokenizer:
         self.lines = clean_text
         return
 
-    @staticmethod
-    def token(word):
-        if re.match(KEYWORD_REGEX, word) is not None:
-            return "keyword", word
-        elif re.match(SYMBOLS_REGEX, word) is not None:
-            return "symbol", word
-        elif re.match(INTEGER_REGEX, word) is not None:
-            return "integerConstant", word
-        elif re.match(STRINGS_REGEX, word) is not None:
-            return "stringConstant", word[1:-1]
-        else:
-            return "identifier", word
-
-    @staticmethod
-    def split_tokens(text):
-        """Breaks a single string into a list of tokens"""
-        return WORD.findall(text)
-
-    @staticmethod
-    def replace_symbol(pair):
-        """Replaces symbols with corresponding alternative representation"""
-        token, val = pair
-        if val == '<':
-            return token, '&lt;'
-        elif val == '>':
-            return token, '&gt;'
-        elif val == '"':
-            return token, '&quot;'
-        elif val == '&':
-            return token, '&amp;'
-        else:
-            return token, val
-
     def tokenize(self):
         """ Tokenizes the text"""
-        return [self.token(word) for word in self.split_tokens(self.lines)]
+        return [self.token_type(word) for word in self.split_into_tokens(self.lines)]
 
     def replace_symbols(self):
         """
@@ -115,16 +69,42 @@ class JackTokenizer:
             return self.tokens[0]
         return 'ERROR', 'END OF FILE'
 
-    def get_token(self):
-        return self.tokens[0]
-
-    def get_value(self):
-        return self.currToken[1]
-
     def advance(self):
         """ Should only be called if hasMoreTokens() is true"""
         if self.has_more_tokens():
             self.currToken = self.tokens.pop(0)
             return self.currToken
         return 'ERROR', 'END OF FILE'
-    
+
+    @staticmethod
+    def token_type(word):
+        if re.match(KEYWORD_REGEX, word) is not None:
+            return "keyword", word
+        elif re.match(SYMBOLS_REGEX, word) is not None:
+            return "symbol", word
+        elif re.match(INTEGER_REGEX, word) is not None:
+            return "integerConstant", word
+        elif re.match(STRINGS_REGEX, word) is not None:
+            return "stringConstant", word[1:-1]
+        else:
+            return "identifier", word
+
+    @staticmethod
+    def split_into_tokens(text):
+        """Breaks a single string into a list of tokens"""
+        return WORD.findall(text)
+
+    @staticmethod
+    def replace_symbol(pair):
+        """Replaces symbols with corresponding alternative representation"""
+        token, val = pair
+        if val == '<':
+            return token, '&lt;'
+        elif val == '>':
+            return token, '&gt;'
+        elif val == '"':
+            return token, '&quot;'
+        elif val == '&':
+            return token, '&amp;'
+        else:
+            return token, val

@@ -1,9 +1,5 @@
 from JackTokenizer import JackTokenizer
-
-UNARY_OPERATORS = {'-', '~'}
-BINARY_OPERATORS = {'+', '-', '*', '/', '|', '=', '&lt;', '&gt;', '&amp;'}
-KEYWORD_CONSTANTS = {'true', 'false', 'null', 'this'}
-
+from CONSTANTS import UNARY_OPERATORS, BINARY_OPERATORS, KEYWORD_CONSTANTS
 
 class CompilationEngine:
     def __init__(self, in_file, out_file):
