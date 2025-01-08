@@ -9,30 +9,36 @@ class CompilationEngine:
         self.indent = ''
 
     def inc_indent(self):
+        """ increases indent by two spaces"""
         self.indent += '  '
 
     def dec_indent(self):
+        """ decreases indent by two spaces if possible"""
         if len(self.indent) > 1:
             self.indent = self.indent[:-2]
 
     def advance(self):
+        """ gets and writes the next token"""
         token, value = self.tokenizer.advance()
         self.write_terminal(token, value)
 
     # WRITES TO FILE:
     def write_non_terminal_start(self, rule):
+        """ wirtes <rule> and adds it to rules"""
         with open(self.output_file, 'a') as outFile:
             outFile.write(f'{self.indent}<{rule}>\n')
         self.rules.append(rule)
         self.inc_indent()
 
     def write_non_terminal_end(self):
+        """ writes </rule> using the last rule in the list that hasn't been closed"""
         self.dec_indent()
         rule = self.rules.pop()
         with open(self.output_file, 'a') as outFile:
             outFile.write(f'{self.indent}</{rule}>\n')
 
     def write_terminal(self, token, value):
+        """ writes <token> value </token>"""
         with open(self.output_file, 'a') as outFile:
             outFile.write(f'{self.indent}<{token}> {value} </{token}>\n')
 
@@ -55,10 +61,12 @@ class CompilationEngine:
     # CHECKERS:
     def has_class_variables(self):
         """ checks if the class has a field/static declaration"""
-        return self.is_next_val('static') or self.is_next_val('field')
+        return (self.is_next_val('static')
+                or self.is_next_val('field'))
 
     def has_subroutine(self):
-        return self.is_next_val('constructor') or self.is_next_val('method') or self.is_next_val('function')
+        return (self.is_next_val('constructor')
+                or self.is_next_val('method') or self.is_next_val('function'))
 
     def has_parameter(self):
         return not self.is_next_token('symbol')
@@ -80,7 +88,8 @@ class CompilationEngine:
                 or self.is_next_token('identifier')
                 or self.is_next_val_in_list(UNARY_OPERATORS)
                 or self.is_next_val_in_list(KEYWORD_CONSTANTS)
-                or self.is_next_val('('))
+                or self.is_next_val('(')
+                )
 
     # COMPILERS:
     def compile_class(self):
