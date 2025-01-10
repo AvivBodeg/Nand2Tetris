@@ -11,7 +11,7 @@ def main():
     # Single file:
     if os.path.isfile(userInput) and userInput.endswith('.jack'):
 
-        output = os.path.join(userInput[:-4] + "xmlT")
+        output = os.path.join(userInput[:-4] + "xml")
         if os.path.exists(output):
             os.remove(output)
         compiler = CompilationEngine(userInput, output)
@@ -21,12 +21,12 @@ def main():
 
     # Dir
     if os.path.isdir(userInput):
-        path = userInput.strip('/').strip('\\')
-        for file in os.listdir(path):
+        path = userInput.rstrip('/').rstrip('\\')
+        for file in os.listdir(userInput):
             if file.endswith('.jack'):
                 print(f"Processing {file}")
                 filePath = os.path.join(path, file)
-                output = os.path.join(path, file[:-4] + "xmlT")
+                output = os.path.join(path, file[:-4] + "xml")
                 if os.path.exists(output):
                     os.remove(output)
                 compiler = CompilationEngine(filePath, output)
