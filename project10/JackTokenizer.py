@@ -1,65 +1,83 @@
-import re  # regular expression
-
-KEYWORDS = {"class", "constructor", "function", "method", "field", "static", "var", "int", "char", "boolean",
-            "void", "true", "false", "null", "this", "let", "do", "if", "else", "while", "return"}
-SYMBOLS = {'{', '}', '(', ')', '[', ']', '.', ',', ';', '+', '-', '*', '/', '&', '<', '>', '=', '~'}
-
-# REGEX:
-KEYWORD_REGEX = '(?!\\w)|'.join(KEYWORDS) + '(?!\\w)'
-SYMBOLS_REGEX = '[' + re.escape('|'.join(SYMBOLS)) + ']'
-INTEGER_REGEX = r'\d+'
-STRINGS_REGEX = r'"[^"\n]*"'
-IDENTIFIERS_REGEX = r'[\w]+'
-WORD = re.compile(
-    f'{KEYWORD_REGEX}|{SYMBOLS_REGEX}|{INTEGER_REGEX}|{STRINGS_REGEX}|{IDENTIFIERS_REGEX}')
+from CONSTANTS import *
 
 
 class JackTokenizer:
     def __init__(self, file):
         with open(file, 'r') as f:
             self.lines = f.read()
-        self.cleanCode()
+        self.clean_code()
         self.currToken = ''
         self.tokens = self.tokenize()
-        self.tokens = self.replaceSymbols()
+        self.tokens = self.replace_symbols() # list of tuples(token, value)
 
-    def cleanCode(self):
+    def clean_code(self):
         """ Removes comments from the file"""
         index = 0
-        cleanText = ''
+        clean_text = ''
         while index < len(self.lines):  # Iterate over the entire text and clean the code
-            currentChar = self.lines[index]
+            current_char = self.lines[index]
             # In String
-            if currentChar == '\"':
-                endIndex = self.lines.find('\"', index + 1)
-                cleanText += self.lines[index: endIndex + 1]
-                index = endIndex + 1
+            if current_char == '\"':
+                end_index = self.lines.find('\"', index + 1)
+                clean_text += self.lines[index: end_index + 1]
+                index = end_index + 1
             # Comment
-            elif currentChar == '/':
+            elif current_char == '/':
                 # single line comment '//'
                 if self.lines[index + 1] == '/':
-                    endIndex = self.lines.find('\n', index + 1)
-                    index = endIndex + 1
-                    cleanText += ' '
+                    end_index = self.lines.find('\n', index + 1)
+                    index = end_index + 1
+                    clean_text += ' '
                 # multi line comment
                 elif self.lines[index + 1] == '*':
-                    endIndex = self.lines.find('*/', index + 1)
-                    index = endIndex + 2
-                    cleanText += ' '
+                    end_index = self.lines.find('*/', index + 1)
+                    index = end_index + 2
+                    clean_text += ' '
                 # / for divide
                 else:
-                    cleanText += self.lines[index]
+                    clean_text += self.lines[index]
                     index = index + 1
             else:
-                cleanText += self.lines[index]
+                clean_text += self.lines[index]
                 index = index + 1
 
         # sets lines to the cleaned version
-        self.lines = cleanText
+        self.lines = clean_text
         return
 
+    def tokenize(self):
+        """ Tokenizes the text"""
+        return [self.token_type(word) for word in self.split_into_tokens(self.lines)]
+
+    def replace_symbols(self):
+        """
+        Replaces symbols to avoid xml problems using the following guide:
+        '<' : &lt
+        '>' : &gt
+        '"' : &quot
+        '&' : &amp
+        """
+        return [self.replace_symbol(tuple_) for tuple_ in self.tokens]
+
+    def has_more_tokens(self):
+        """ Checks if there are more tokens to process"""
+        return self.tokens != []
+
+    def peek(self):
+        """ Returns the first token in tokens"""
+        if self.has_more_tokens():
+            return self.tokens[0]
+        return 'ERROR', 'END OF FILE'
+
+    def advance(self):
+        """ Should only be called if hasMoreTokens() is true"""
+        if self.has_more_tokens():
+            self.currToken = self.tokens.pop(0)
+            return self.currToken
+        return 'ERROR', 'END OF FILE'
+
     @staticmethod
-    def token(word):
+    def token_type(word):
         if re.match(KEYWORD_REGEX, word) is not None:
             return "keyword", word
         elif re.match(SYMBOLS_REGEX, word) is not None:
@@ -72,14 +90,14 @@ class JackTokenizer:
             return "identifier", word
 
     @staticmethod
-    def splitTokens(text):
+    def split_into_tokens(text):
         """Breaks a single string into a list of tokens"""
         return WORD.findall(text)
 
     @staticmethod
-    def replaceSymbol(pair):
+    def replace_symbol(tuple_):
         """Replaces symbols with corresponding alternative representation"""
-        token, val = pair
+        token, val = tuple_
         if val == '<':
             return token, '&lt;'
         elif val == '>':
@@ -90,38 +108,3 @@ class JackTokenizer:
             return token, '&amp;'
         else:
             return token, val
-
-    def tokenize(self):
-        """ Tokenizes the text"""
-        return [self.token(word) for word in self.splitTokens(self.lines)]
-
-    def replaceSymbols(self):
-        """
-        Replaces symbols to avoid xml problems using the following guide:
-        '<' : &lt
-        '>' : &gt
-        '"' : &quot
-        '&' : &amp
-        """
-        return [self.replaceSymbol(pair) for pair in self.tokens]
-
-    def hasMoreTokens(self):
-        """ Checks if there are more tokens to process"""
-        return self.tokens != []
-
-    def peek(self):
-        """ Returns the first token in tokens"""
-        if self.hasMoreTokens():
-            return self.tokens[0]
-        return 'ERROR', 0
-
-    def getToken(self):
-        return self.tokens[0]
-
-    def getValue(self):
-        return self.currToken[1]
-
-    def advance(self):
-        """ Should only be called if hasMoreTokens() is true"""
-        self.currToken = self.tokens.pop(0)
-        return self.currToken
