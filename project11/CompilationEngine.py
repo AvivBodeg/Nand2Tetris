@@ -96,14 +96,14 @@ class CompilationEngine:
     def compile_class_variables(self):
         """ Compiles the static and field declarations"""
         while self.has_class_variables():
-            self.write_class_var_dec()  # TODO: writers
+            self.write_class_var_dec()
 
     def compile_parameter_list(self, function_type):
         """ compiles a list of parameters, possibly empty"""
         if function_type[1] == 'method':
             self.symbol_table.define('this', 'self', 'arg')
         while self.has_parameter():
-            self.write_parameter()  # TODO: writes
+            self.write_parameter()
 
     def compile_subroutine_body(self, function_type):
         self.advance()  # '{'
@@ -175,41 +175,87 @@ class CompilationEngine:
             elif operator == '/':
                 self.VMwriter.write_call('Math.divide', 2)
 
-
-    # TODO: ########################## here
+    # TODO: remake this somehow, its awful
     def compile_term(self):
         """ compiles term"""
-        self.write_non_terminal_start('term')
-        if (self.is_next_token('integerConstant')
-                or self.is_next_token('stringConstant')
-                or self.is_next_val_in_list(KEYWORD_CONSTANTS)):
-            self.advance()  # constant
-        elif self.is_next_token('identifier'):
-            self.advance()  # name
-            if self.is_next_val('['):
-                self.write_array_index()
-            if self.is_next_val('('):
+        is_array = False
+        if self.is_next_token("integerConstant"):
+            value = self.advance()[1]  # constant
+            self.VMwriter.write_push('constant', value)
+        elif self.is_next_token("stringConstant"):
+            value = self.advance()[1]  # string
+            self.VMwriter.write_push('constant', len(value))
+            self.VMwriter.write_call('String.new', 1)
+            for letter in value:
+                self.VMwriter.write_push('constant', ord(letter))
+                self.VMwriter.write_call('String.appendChar', 2)
+        elif self.is_next_val(KEYWORD_CONSTANTS):
+            value = self.advance()[1]  # keywordConstant
+            if value == "this":
+                self.VMwriter.write_push('pointer', 0)
+            else:
+                self.VMwriter.write_push('constant', 0)
+                if value == "true":
+                    self.VMwriter.write_arithmetic('not')
+        elif self.is_next_token("identifier"):
+            nLocals = 0
+            name = self.advance()[1]  # class/var/func name
+            if self.is_next_val("["):  # case of varName[expression]
+                is_array = True
+                self.compile_array_index(name)
+            if self.is_next_val("("):
+                nLocals += 1
+                self.VMwriter.write_push('pointer', 0)
                 self.advance()  # '('
-                self.compile_expression_list()
+                nLocals += self.compile_expression_list()
                 self.advance()  # ')'
-            if self.is_next_val('.'):
+                self.VMwriter.write_call(self.class_name + '.' + name, nLocals)
+            elif self.is_next_val("."):  # case of subroutine call
                 self.advance()  # '.'
-                self.advance()  # subroutine_name
+                lastName = self.advance()[1]  # subroutine name
+                if name in self.symbol_table.current_scope or name in self.symbol_table.global_scope:
+                    self.write_push(name)
+                    name = self.symbol_table.type_of(name) + '.' + lastName
+                    nLocals += 1
+                else:
+                    name = name + '.' + lastName
                 self.advance()  # '('
-                self.compile_expression_list()
+                nLocals += self.compile_expression_list()
                 self.advance()  # ')'
-        elif self.is_next_val_in_list(UNARY_OPERATORS):
-            self.advance()  # op
+                self.VMwriter.write_call(name, nLocals)
+            else:
+                if is_array:
+                    self.VMwriter.write_pop('pointer', 1)
+                    self.VMwriter.write_push('that', 0)
+                elif name in self.symbol_table.current_scope:
+                    if self.symbol_table.kind_of(name) == 'var':
+                        self.VMwriter.write_push('local', self.symbol_table.index_of(name))
+                    elif self.symbol_table.kind_of(name) == 'arg':
+                        self.VMwriter.write_push('argument', self.symbol_table.index_of(name))
+                else:
+                    if self.symbol_table.kind_of(name) == 'static':
+                        self.VMwriter.write_push('static', self.symbol_table.index_of(name))
+                    else:
+                        self.VMwriter.write_push('this', self.symbol_table.index_of(name))
+        elif self.is_next_val(UNARY_OPERATORS):
+            op = self.advance()[1]  # unary op
             self.compile_term()
-        elif self.is_next_val('('):
+            if op == '-':
+                self.VMwriter.write_arithmetic('neg')
+            elif op == '~':
+                self.VMwriter.write_arithmetic('not')
+        elif self.is_next_val("("):
             self.advance()  # '('
             self.compile_expression()
             self.advance()  # ')'
-        self.write_non_terminal_end()
+
+    def compile_array_index(self, name):    # DONE
+        self.write_array_index()
+        self.write_push(name)
+        self.VMwriter.write_arithmetic('add')
 
     def compile_statements(self):
         """ compiles a list of statements"""
-        self.write_non_terminal_start('statements')
         while self.has_statement():
             if self.is_next_val("do"):
                 self.compile_do()
@@ -221,11 +267,74 @@ class CompilationEngine:
                 self.compile_let()
             elif self.is_next_val("if"):
                 self.compile_if()
-        self.write_non_terminal_end()
-    
-    #TODO: add all the rest of the compiles
 
-    # WRITES TODO: all of them
+    # STATEMENTS:
+    def compile_let(self):
+        """ compiles let statement"""
+        self.advance()  # let
+        is_array = False
+        name = self.advance()[1]    # var_name
+        if self.is_next_val('['):  # array
+            is_array = True
+            self.compile_array_index()
+        self.advance()  # '='
+        self.compile_expression()
+        if is_array:
+            self.VMwriter.write_pop('temp', 0)
+            self.VMwriter.write_pop('pointer', 1)
+            self.VMwriter.write_push('temp', 0)
+            self.VMwriter.write_pop('that', 0)
+        else:
+            self.write_pop(name)
+        self.advance()  # ';'
+
+    # TODO: ########################## here
+    def compile_if(self):
+        """ compiles if statement"""
+        self.write_non_terminal_start('ifStatement')
+        self.advance()  # if
+        self.advance()  # '('
+        self.compile_expression()
+        self.advance()  # ')'
+        self.advance()  # '{'
+        self.compile_statements()
+        self.advance()  # '}'
+        if self.is_next_val('else'):
+            self.advance()  # else
+            self.advance()  # '{'
+            self.compile_statements()
+            self.advance()  # '}'
+        self.write_non_terminal_end()
+
+    def compile_do(self):   # DONE
+        """ compiles do statement"""
+        self.advance()  # do
+        self.compile_subroutine_call()
+        self.VMwriter.write_pop('temp', 0)
+        self.advance()  # ';'
+
+    def compile_while(self):
+        """ compiles while statement"""
+        self.write_non_terminal_start('whileStatement')
+        self.advance()  # while
+        self.advance()  # '('
+        self.compile_expression()
+        self.advance()  # ')'
+        self.advance()  # '{'
+        self.compile_statements()
+        self.advance()  # '}'
+        self.write_non_terminal_end()
+
+    def compile_return(self):
+        """ compiles return statement :)"""
+        self.write_non_terminal_start('returnStatement')
+        self.advance()  # return
+        while self.term_exists():
+            self.compile_expression()
+        self.advance()  # ';'
+        self.write_non_terminal_end()
+
+    # WRITES DONE
     def write_parameter(self):
         """writes a single parameter, with option to add ',' if there are multiple"""
         self.advance()  # type
@@ -249,11 +358,36 @@ class CompilationEngine:
             self.advance()  # var_name
         self.advance()  # ';'
 
-    def write_pop(self, name):
-        pass
+    def write_push(self, name):
+        if name in self.symbol_table.current_scope:
+            if self.symbol_table.kind_of(name) == 'arg':
+                self.VMwriter.write_pop('argument', self.symbol_table.index_of(name))
+            elif self.symbol_table.kind_of(name) == 'var':
+                self.VMwriter.write_pop('local', self.symbol_table.index_of(name))
+        else:
+            if self.symbol_table.kind_of(name) == 'static':
+                self.VMwriter.write_pop('static', self.symbol_table.index_of(name))
+            else:
+                self.VMwriter.write_pop('this', self.symbol_table.index_of(name))
 
-    def write_push(self, name, sub_name):
-        pass
+    def write_pop(self, name):
+        if name in self.symbol_table.current_scope:
+            if self.symbol_table.kind_of(name) == 'arg':
+                self.VMwriter.write_push('argument', self.symbol_table.index_of(name))
+            elif self.symbol_table.kind_of(name) == 'var':
+                self.VMwriter.write_push('local', self.symbol_table.index_of(name))
+        else:
+            if self.symbol_table.kind_of(name) == 'static':
+                self.VMwriter.write_push('static', self.symbol_table.index_of(name))
+            else:
+                self.VMwriter.write_push('this', self.symbol_table.index_of(name))
 
     def load_pointer(self, function_type):
-        pass
+        if function_type[1] == 'constructor':
+            num_of_global_vars = self.symbol_table.count_variables_globally('field')
+            self.VMwriter.write_push('constant', num_of_global_vars)
+            self.VMwriter.write_call('Memory.alloc', 1)
+            self.VMwriter.write_pop('pointer', 0)
+        elif function_type[1] == 'method':
+            self.VMwriter.write_push('argument', 0)
+            self.VMwriter.write_pop('pointer', 0)
