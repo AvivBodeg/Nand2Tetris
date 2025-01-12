@@ -16,3 +16,7 @@ STRINGS_REGEX = r'"[^"\n]*"'
 IDENTIFIERS_REGEX = r'[\w]+'
 WORD = re.compile(
     f'{KEYWORD_REGEX}|{SYMBOLS_REGEX}|{INTEGER_REGEX}|{STRINGS_REGEX}|{IDENTIFIERS_REGEX}')
+
+GLOBAL = 'global'
+
+ARITHMETIC_OPERATORS = {'+': 'add', '-': 'sub', '|': 'or', '&': 'and', '=': 'eq', '<': 'lt', '>': 'gt'}

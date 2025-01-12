@@ -1,3 +1,6 @@
+from CONSTANTS import GLOBAL
+
+
 class SymbolTable:
     def __init__(self):
         self.global_scope = {}
@@ -20,7 +23,7 @@ class SymbolTable:
 
     def set_scope(self, name):
         """sets the current scope"""
-        if name == 'global':
+        if name == GLOBAL:
             self.current_scope = self.global_scope
         else:
             self.current_scope = self.subroutine_scope

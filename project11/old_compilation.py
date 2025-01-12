@@ -1,20 +1,46 @@
 from JackTokenizer import JackTokenizer
-from SymbolTable import SymbolTable
-from VMWriter import VMWriter
-from CONSTANTS import UNARY_OPERATORS, KEYWORD_CONSTANTS, GLOBAL, BINARY_OPERATORS, ARITHMETIC_OPERATORS
-
+from CONSTANTS import UNARY_OPERATORS, BINARY_OPERATORS, KEYWORD_CONSTANTS
 
 class CompilationEngine:
-    def __init__(self, input_file, output_file):
-        self.input_file = input_file
-        self.tokenizer = JackTokenizer(input_file)
-        self.symbol_table = SymbolTable()
-        self.VMwriter = VMWriter(output_file)
-        self.name = ''
-        self.class_name = ''
+    def __init__(self, in_file, out_file):
+        self.tokenizer = JackTokenizer(in_file)
+        self.rules = []
+        self.output_file = out_file
+        self.indent = ''
+
+    def inc_indent(self):
+        """ increases indent by two spaces"""
+        self.indent += '  '
+
+    def dec_indent(self):
+        """ decreases indent by two spaces if possible"""
+        if len(self.indent) > 1:
+            self.indent = self.indent[:-2]
 
     def advance(self):
-        return self.tokenizer.advance()
+        """ gets and writes the next token"""
+        token, value = self.tokenizer.advance()
+        self.write_terminal(token, value)
+
+    # WRITES TO FILE:
+    def write_non_terminal_start(self, rule):
+        """ wirtes <rule> and adds it to rules"""
+        with open(self.output_file, 'a') as outFile:
+            outFile.write(f'{self.indent}<{rule}>\n')
+        self.rules.append(rule)
+        self.inc_indent()
+
+    def write_non_terminal_end(self):
+        """ writes </rule> using the last rule in the list that hasn't been closed"""
+        self.dec_indent()
+        rule = self.rules.pop()
+        with open(self.output_file, 'a') as outFile:
+            outFile.write(f'{self.indent}</{rule}>\n')
+
+    def write_terminal(self, token, value):
+        """ writes <token> value </token>"""
+        with open(self.output_file, 'a') as outFile:
+            outFile.write(f'{self.indent}<{token}> {value} </{token}>\n')
 
     # VALUE/TOKEN CHECKS:
     def is_next_val_in_list(self, lst):
@@ -32,12 +58,7 @@ class CompilationEngine:
         toke, val = self.tokenizer.peek()
         return toke == token
 
-    def deep_peek(self, token):
-        """ checks if the next next token is the one supplied"""
-        toke, val = self.tokenizer.deep_peek()
-        return toke == token
-
-    # EXISTS CHECKERS
+    # CHECKERS:
     def has_class_variables(self):
         """ checks if the class has a field/static declaration"""
         return (self.is_next_val('static')
@@ -70,113 +91,96 @@ class CompilationEngine:
                 or self.is_next_val('(')
                 )
 
-    # COMPILERS
+    # COMPILERS:
     def compile_class(self):
         """ Compiles a class"""
-        self.advance()  # 'class'
-        self.class_name = self.advance()[1]
+        self.write_non_terminal_start('class')
+        self.advance()  # class keyword
+        self.advance()  # class name
         self.advance()  # '{'
         if self.has_class_variables():
             self.compile_class_variables()
         while self.has_subroutine():
             self.compile_subroutine()
         self.advance()  # '}'
+        self.write_non_terminal_end()
 
     def compile_subroutine(self):
         """ compiles a method/function/constructor"""
-        function_type = self.advance()  # method/function/constructor
-        self.name = f'{self.class_name}.{self.advance()[1]}'
-        self.symbol_table.reset(self.name)
-        self.symbol_table.set_scope(self.name)
-        self.advance()  # '('
-        self.compile_parameter_list(function_type)
-        self.advance()  # ')'
-        self.compile_subroutine_body(function_type)
+        self.write_non_terminal_start('subroutineDec')
+        self.advance()  # method/function/constructor
+        self.advance()  # return tpe
+        self.advance()  # name/new
+        self.advance()  # '{'
+        self.compile_parameter_list()
+        self.advance()  # '}'
+        self.compile_subroutine_body()
+        self.write_non_terminal_end()
 
     def compile_class_variables(self):
         """ Compiles the static and field declarations"""
         while self.has_class_variables():
-            self.write_class_var_dec()  # TODO: writers
+            self.write_non_terminal_start('classVarDec')
+            self.write_class_var_dec()
+            self.write_non_terminal_end()
 
-    def compile_parameter_list(self, function_type):
+    def compile_parameter_list(self):
         """ compiles a list of parameters, possibly empty"""
-        if function_type[1] == 'method':
-            self.symbol_table.define('this', 'self', 'arg')
+        self.write_non_terminal_start('parameterList')
         while self.has_parameter():
-            self.write_parameter()  # TODO: writes
+            self.write_parameter()
+        self.write_non_terminal_end()
 
-    def compile_subroutine_body(self, function_type):
+    def compile_subroutine_body(self):
+        self.write_non_terminal_start('subroutineBody')
         self.advance()  # '{'
         while self.has_val_dec():
             self.compile_var_dec()
-        num_vars = self.symbol_table.count_variables('var')
-        self.VMwriter.write_function(self.name, num_vars)
-        self.load_pointer(function_type)
         self.compile_statements()
         self.advance()  # '}'
-        self.symbol_table.set_scope(GLOBAL)
+        self.write_non_terminal_end()
 
     def compile_var_dec(self):
         """" compiles a variable declaration"""
-        kind = self.advance()[1]  # 'var'
-        type_ = self.advance()[1]  # type
-        name = self.advance()[1]  # var_name
-        self.symbol_table.define(name, kind, type_)
+        self.write_non_terminal_start('varDec')
+        self.advance()  # 'var'
+        self.advance()  # type
+        self.advance()  # var_name
         while self.is_next_val(','):
             self.advance()  # ','
-            name = self.advance()[1]  # var_name
-            self.symbol_table.define(name, kind, type_)
+            self.advance()  # var_name
         self.advance()  # ';'
+        self.write_non_terminal_end()
 
     def compile_subroutine_call(self):
         """ compiles subroutine call. do name([list])"""
-        num_locals = 0
-        name = self.advance()[1]   # class/subroutine/variable name
-        if self.is_next_val(','):
-            self.advance()  # ','
-            sub_subroutine_name = self.advance()[1]   # subroutine name
-            if name in self.symbol_table.current_scope or name in self.symbol_table.global_scope:
-                self.VMwriter.write_push(name, sub_subroutine_name)
-                full_name = f'{self.symbol_table.type_of(name)}.{sub_subroutine_name}'
-                num_locals += 1
-            else:
-                full_name = f'{name}.{sub_subroutine_name}'
-        else:
-            self.VMwriter.write_push('pointer', 0)
-            num_locals += 1
-            full_name = f'{self.class_name}.{name}'
+        self.advance()  # name
+        if self.is_next_val('.'):
+            self.advance()  # '.'
+            self.advance()  # subroutine name
         self.advance()  # '('
-        num_locals += self.compile_expression_list()
-        self.VMwriter.write_call(full_name, num_locals)
+        self.compile_expression_list()
         self.advance()  # ')'
 
     def compile_expression_list(self):
-        """compiles a list of experssion, possibly empty and returns the amount of expressions"""
-        expression_counter = 0
+        """compiles a list of experssion, possibly empty"""
+        self.write_non_terminal_start('expressionList')
         if self.term_exists():
             self.compile_expression()
-            expression_counter += 1
         while self.is_next_val(','):
             self.advance()  # ','
             self.compile_expression()
-            expression_counter += 1
-        return expression_counter
+        self.write_non_terminal_end()
 
     def compile_expression(self):
         """ compiles an expression"""
+        self.write_non_terminal_start('expression')
         self.compile_term()
         while self.is_next_val_in_list(BINARY_OPERATORS):
-            operator = self.advance()[1]  # op_symbol
+            self.advance()  # op_symbol
             self.compile_term()
-            if operator in ARITHMETIC_OPERATORS.keys():
-                self.VMwriter.write_arithmetic(ARITHMETIC_OPERATORS[operator])
-            elif operator == '*':
-                self.VMwriter.write_call('Math.multiply', 2)
-            elif operator == '/':
-                self.VMwriter.write_call('Math.divide', 2)
+        self.write_non_terminal_end()
 
-
-    # TODO: ########################## here
     def compile_term(self):
         """ compiles term"""
         self.write_non_terminal_start('term')
@@ -222,17 +226,67 @@ class CompilationEngine:
             elif self.is_next_val("if"):
                 self.compile_if()
         self.write_non_terminal_end()
-    
-    #TODO: add all the rest of the compiles
 
-    # WRITES TODO: all of them
-    def write_parameter(self):
-        """writes a single parameter, with option to add ',' if there are multiple"""
-        self.advance()  # type
-        self.advance()  # param_name
-        if self.is_next_val(','):
-            self.advance()  # ','
+    # STATEMENTS:
+    def compile_let(self):
+        """ compiles let statement"""
+        self.write_non_terminal_start('letStatement')
+        self.advance()  # let
+        self.advance()  # var_name
+        if self.is_next_val('['):  # array
+            self.write_array_index()
+        self.advance()  # '='
+        self.compile_expression()
+        self.advance()  # ';'
+        self.write_non_terminal_end()
 
+    def compile_if(self):
+        """ compiles if statement"""
+        self.write_non_terminal_start('ifStatement')
+        self.advance()  # if
+        self.advance()  # '('
+        self.compile_expression()
+        self.advance()  # ')'
+        self.advance()  # '{'
+        self.compile_statements()
+        self.advance()  # '}'
+        if self.is_next_val('else'):
+            self.advance()  # else
+            self.advance()  # '{'
+            self.compile_statements()
+            self.advance()  # '}'
+        self.write_non_terminal_end()
+
+    def compile_do(self):
+        """ compiles do statement"""
+        self.write_non_terminal_start('doStatement')
+        self.advance()  # do
+        self.compile_subroutine_call()
+        self.advance()  # ';'
+        self.write_non_terminal_end()
+
+    def compile_while(self):
+        """ compiles while statement"""
+        self.write_non_terminal_start('whileStatement')
+        self.advance()  # while
+        self.advance()  # '('
+        self.compile_expression()
+        self.advance()  # ')'
+        self.advance()  # '{'
+        self.compile_statements()
+        self.advance()  # '}'
+        self.write_non_terminal_end()
+
+    def compile_return(self):
+        """ compiles return statement :)"""
+        self.write_non_terminal_start('returnStatement')
+        self.advance()  # return
+        while self.term_exists():
+            self.compile_expression()
+        self.advance()  # ';'
+        self.write_non_terminal_end()
+
+    # HELPER WRITES:
     def write_array_index(self):
         """ writes array index in the form '[term]' """
         self.advance()  # '['
@@ -249,11 +303,9 @@ class CompilationEngine:
             self.advance()  # var_name
         self.advance()  # ';'
 
-    def write_pop(self, name):
-        pass
-
-    def write_push(self, name, sub_name):
-        pass
-
-    def load_pointer(self, function_type):
-        pass
+    def write_parameter(self):
+        """writes a single parameter, with option to add ',' if there are multiple"""
+        self.advance()  # type
+        self.advance()  # param_name
+        if self.is_next_val(','):
+            self.advance()  # ','
