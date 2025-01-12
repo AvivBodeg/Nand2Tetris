@@ -10,7 +10,7 @@ def main():
     user_input = sys.argv[1]
     # Single file:
     if os.path.isfile(user_input) and user_input.endswith('.jack'):
-        output = os.path.join(user_input[:-4] + "xml")
+        output = os.path.join(user_input[:-4] + "vm")
         if os.path.exists(output):
             os.remove(output)
         compiler = CompilationEngine(user_input, output)
@@ -25,7 +25,7 @@ def main():
             if file.endswith('.jack'):
                 print(f"Processing {file}")
                 file_path = os.path.join(path, file)
-                output = os.path.join(path, file[:-4] + "xml")
+                output = os.path.join(path, file[:-4] + "vm")
                 if os.path.exists(output):
                     os.remove(output)
                 compiler = CompilationEngine(file_path, output)
