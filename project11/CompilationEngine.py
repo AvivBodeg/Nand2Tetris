@@ -289,22 +289,32 @@ class CompilationEngine:
         self.advance()  # ';'
 
     # TODO: ########################## here
-    def compile_if(self):
+    def compile_if(self):   # DONE
         """ compiles if statement"""
-        self.write_non_terminal_start('ifStatement')
         self.advance()  # if
         self.advance()  # '('
         self.compile_expression()
         self.advance()  # ')'
         self.advance()  # '{'
+        # setup jumps
+        jump_index = self.symbol_table.if_counter
+        self.symbol_table.if_counter += 1
+        self.VMwriter.write_if_goto(f'if_true{jump_index}')
+        self.VMwriter.write_goto(f'if_false{jump_index}')
+        self.VMwriter.write_label(f'if_true{jump_index}')
         self.compile_statements()
         self.advance()  # '}'
         if self.is_next_val('else'):
             self.advance()  # else
             self.advance()  # '{'
+            # setup jumps
+            self.VMwriter.write_goto(f'if_end{jump_index}')
+            self.VMwriter.write_label(f'if_false{jump_index}')
             self.compile_statements()
             self.advance()  # '}'
-        self.write_non_terminal_end()
+            self.VMwriter.write_label(f'if_end{jump_index}')
+        else:
+            self.VMwriter.write_label(f'if_false{jump_index}')
 
     def compile_do(self):   # DONE
         """ compiles do statement"""
@@ -313,26 +323,34 @@ class CompilationEngine:
         self.VMwriter.write_pop('temp', 0)
         self.advance()  # ';'
 
-    def compile_while(self):
+    def compile_while(self):    # DONE
         """ compiles while statement"""
-        self.write_non_terminal_start('whileStatement')
         self.advance()  # while
         self.advance()  # '('
+        jump_index = self.symbol_table.while_counter
+        self.symbol_table.while_counter += 1
+        # setup jumps
+        self.VMwriter.write_label(f'while{jump_index}')
         self.compile_expression()
         self.advance()  # ')'
         self.advance()  # '{'
+        self.VMwriter.write_arithmetic('not')
+        self.VMwriter.write_if_goto(f'while_end{jump_index}')
         self.compile_statements()
         self.advance()  # '}'
-        self.write_non_terminal_end()
+        self.VMwriter.write_label(f'while{jump_index}')
+        self.VMwriter.write_label(f'while_end{jump_index}')
 
-    def compile_return(self):
+    def compile_return(self):   # done
         """ compiles return statement :)"""
-        self.write_non_terminal_start('returnStatement')
         self.advance()  # return
+        return_void = not self.term_exists()
         while self.term_exists():
             self.compile_expression()
         self.advance()  # ';'
-        self.write_non_terminal_end()
+        if return_void:
+            self.VMwriter.write_push('constant', 0)
+        self.VMwriter.write_return()
 
     # WRITES DONE
     def write_parameter(self):

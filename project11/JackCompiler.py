@@ -5,9 +5,9 @@ from CompilationEngine import CompilationEngine
 def main():
     if len(sys.argv) != 2:
         print("Usage: JackAnalyzer  <path/to/dir | file.jack>")
-        exit(1)
+    #    exit(1)
 
-    user_input = sys.argv[1]
+    user_input = '11/Average/Main.jack'#sys.argv[1]
     # Single file:
     if os.path.isfile(user_input) and user_input.endswith('.jack'):
         output = os.path.join(user_input[:-4] + "vm")

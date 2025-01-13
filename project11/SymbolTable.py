@@ -72,11 +72,10 @@ class SymbolTable:
             return self.global_scope[name][2]
         return 'None'
 
-    # TODO: might have to replace with 'len([var for (key, var) in self.current_scope.items() if kind == var[1]])'
     def count_variables(self, kind):
         """returns the number of variables of a specific kind in the current scope"""
-        return len([var for var in self.current_scope.values() if kind == var[1]])
+        return len([var for (key, var) in self.current_scope.items() if var[1] == kind])
 
     def count_variables_globally(self, kind):
         """returns the number of variables of a specific kind in the global scope"""
-        return len([var for var in self.global_scope.values() if kind == var[1]])
+        return len([var for (key, var) in self.global_scope.items() if var[1] == kind])
