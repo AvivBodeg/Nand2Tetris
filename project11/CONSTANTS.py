@@ -20,3 +20,5 @@ WORD = re.compile(
 GLOBAL = 'global'
 
 ARITHMETIC_OPERATORS = {'+': 'add', '-': 'sub', '|': 'or', '&': 'and', '=': 'eq', '<': 'lt', '>': 'gt'}
+
+STATEMENTS = ['do', 'let', 'if', 'while', 'return']

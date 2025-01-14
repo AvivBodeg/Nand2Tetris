@@ -1,10 +1,11 @@
+# DONE
 from CONSTANTS import GLOBAL
 
 
 class SymbolTable:
     def __init__(self):
         self.global_scope = {}
-        self.subroutine_scope = {}
+        self.subroutines_scope = {}
         self.current_scope = self.global_scope
         self.field_counter = 0
         self.static_counter = 0
@@ -13,20 +14,12 @@ class SymbolTable:
         self.if_counter = 0
         self.while_counter = 0
 
-    def get_index(self, name):
-        """gets the index of a given  variable name"""
-        if name in self.current_scope:
-            return self.current_scope[name][2]
-        if name in self.global_scope:
-            return self.global_scope[name][2]
-        return 'None'
-
     def set_scope(self, name):
         """sets the current scope"""
         if name == GLOBAL:
             self.current_scope = self.global_scope
         else:
-            self.current_scope = self.subroutine_scope
+            self.current_scope = self.subroutines_scope[name]
 
     def reset(self, subroutine_name):
         """resets the symbol table and prepares for a new subroutine"""
@@ -34,20 +27,20 @@ class SymbolTable:
         self.argument_counter = 0
         self.while_counter = 0
         self.if_counter = 0
-        self.subroutine_scope[subroutine_name] = {}
+        self.subroutines_scope[subroutine_name] = {}
 
     def define(self, name, type_, kind):
         if kind == 'static':
             self.global_scope[name] = (type_, kind, self.static_counter)
             self.static_counter += 1
         elif kind == 'field':
-            self.subroutine_scope[name] = (type_, kind, self.field_counter)
+            self.global_scope[name] = (type_, kind, self.field_counter)
             self.field_counter += 1
         elif kind == 'arg':
-            self.subroutine_scope[name] = (type_, kind, self.argument_counter)
+            self.current_scope[name] = (type_, kind, self.argument_counter)
             self.argument_counter += 1
         elif kind == 'var':
-            self.subroutine_scope[name] = (type_, kind, self.variable_counter)
+            self.current_scope[name] = (type_, kind, self.variable_counter)
             self.variable_counter += 1
 
     def type_of(self, name):
