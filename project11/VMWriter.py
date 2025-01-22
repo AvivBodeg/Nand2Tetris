@@ -27,13 +27,13 @@ class VMWriter:
         with open(self.output_file, 'a') as out_file:
             out_file.write(f'if-goto {label}\n')
 
-    def write_call(self, name, nArgs):
+    def write_call(self, name, n_args):
         with open(self.output_file, 'a') as out_file:
-            out_file.write(f'call {name} {nArgs}\n')
+            out_file.write(f'call {name} {n_args}\n')
 
-    def write_function(self, name, nVars):
+    def write_function(self, name, n_vars):
         with open(self.output_file, 'a') as out_file:
-            out_file.write(f'function {name} {nVars}\n')
+            out_file.write(f'function {name} {n_vars}\n')
 
     def write_return(self):
         with open(self.output_file, 'a') as out_file:
