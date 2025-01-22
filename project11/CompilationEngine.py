@@ -163,7 +163,7 @@ class CompilationEngine:
     def compile_subroutine_call(self):
         locals_count = 0
         name = self.advance()[1]
-        if self.is_next_value(','):
+        if self.is_next_value('.'):
             self.advance()  # ','
             sub_name = self.advance()[1]
             if name in self.symbol_table.current_scope or name in self.symbol_table.global_scope:
@@ -271,10 +271,10 @@ class CompilationEngine:
 
     def compile_return(self):
         self.advance()  # 'return'
-        return_void = False
+        return_void = True
         while self.has_expression():
             self.compile_expression()
-            return_void = True
+            return_void = False
         if return_void:
             self.VMwriter.write_push('constant', 0)
         self.VMwriter.write_return()
@@ -323,7 +323,7 @@ class CompilationEngine:
             self.VMwriter.write_pop('temp', 0)
             self.VMwriter.write_pop('pointer', 1)
             self.VMwriter.write_push('temp', 0)
-            self.VMwriter.write_push('that', 0)
+            self.VMwriter.write_pop('that', 0)
         else:
             self.write_pop(name)
         self.advance()  # ';'
