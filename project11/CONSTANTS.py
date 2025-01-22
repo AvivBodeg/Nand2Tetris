@@ -1,7 +1,7 @@
 import re
 
 UNARY_OPERATORS = {'-', '~'}
-BINARY_OPERATORS = {'+', '-', '*', '/', '|', '=', '&lt;', '&gt;', '&amp;'}
+BINARY_OPERATORS = {'+', '-', '*', '/', '|', '=', '<', '>', '&'}
 KEYWORD_CONSTANTS = {'true', 'false', 'null', 'this'}
 
 KEYWORDS = {"class", "constructor", "function", "method", "field", "static", "var", "int", "char", "boolean",
